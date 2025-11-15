@@ -37,6 +37,7 @@ pub mod pay2msg {
 
     pub fn send_message(
         ctx: Context<SendMessage>,
+        salt: u64,
         amount_lamports: u64,
         content: String,
     ) -> Result<()> {
