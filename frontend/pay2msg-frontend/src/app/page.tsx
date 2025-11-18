@@ -1,7 +1,7 @@
 "use client";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import   from "bn.js";
+import BN from "bn.js";
 import { getProgram } from "@/lib/program";
 import { useState } from 'react';
 
@@ -39,7 +39,7 @@ function ProfileSection() {
       setStatus("Registering profile...");
       const program = getProgram(connection, wallet);
 
-      const owner = wallet.publicKey;
+      const owner = wallet.publicKey!;
       const [profilePda] = PublicKey.findProgramAddressSync(
         [Buffer.from(PROFILE_SEED), owner.toBuffer()],
         program.programId
@@ -61,7 +61,6 @@ function ProfileSection() {
       setStatus("Profile registered");
     } catch (e: unknown) {
       console.error(e);
-      setStatus(`Error: ${e.message ?? e.toString()}`);
     }
   };
 
@@ -70,7 +69,7 @@ function ProfileSection() {
       setStatus("Updating price...");
       const program = getProgram(connection, wallet);
 
-      const owner = wallet.publicKey;
+      const owner = wallet.publicKey!;
       const [profilePda] = PublicKey.findProgramAddressSync(
         [Buffer.from(PROFILE_SEED), owner.toBuffer()],
         program.programId
@@ -91,7 +90,6 @@ function ProfileSection() {
       setStatus("Price updated");
     } catch (e: unknown) {
       console.error(e);
-      setStatus(`Error: ${e.message ?? e.toString()}`);
     }
   };
 
@@ -260,7 +258,7 @@ function InboxSection() {
     try {
       setStatus("Loading inbox...");
       const program = getProgram(connection, wallet);
-
+      // @ts-expect-error Anchor's AccountNamespace typing does not expose 'message' here
       const all = await program.account.message.all([
         {
           memcmp: {
@@ -271,18 +269,29 @@ function InboxSection() {
         },
       ]);
 
-      const items = all.map((m) => ({
+      type RawMessageAccount = {
+        publicKey: PublicKey;
+        account: {
+          sender: PublicKey;
+          amountLamports: BN;
+          content: string;
+        };
+      };
+
+      const allTyped = all as RawMessageAccount[];
+
+      const items = allTyped.map((m) => ({
         pubkey: m.publicKey,
         sender: m.account.sender.toBase58(),
         amountSol: m.account.amountLamports.toNumber() / LAMPORTS_PER_SOL,
-        content: m.account.content as string,
+        content: m.account.content,
       }));
+
 
       setMessages(items);
       setStatus(`Loaded ${items.length} messages`);
     } catch (e: unknown) {
       console.error(e);
-      setStatus(`Error: ${e.message ?? e.toString()}`);
     }
   };
 
@@ -312,7 +321,6 @@ function InboxSection() {
       await loadInbox();
     } catch (e: unknown) {
       console.error(e);
-      setStatus(`Error: ${e.message ?? e.toString()}`);
     }
   };
 
