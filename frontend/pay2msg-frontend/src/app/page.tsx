@@ -1,8 +1,7 @@
 "use client";
-import DashboardFeature from '@/features/dashboard/dashboard-feature'
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import BN from "bn.js";
+import   from "bn.js";
 import { getProgram } from "@/lib/program";
 import { useState } from 'react';
 
@@ -60,7 +59,7 @@ function ProfileSection() {
         .rpc();
 
       setStatus("Profile registered");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       setStatus(`Error: ${e.message ?? e.toString()}`);
     }
@@ -90,7 +89,7 @@ function ProfileSection() {
         .rpc();
 
       setStatus("Price updated");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       setStatus(`Error: ${e.message ?? e.toString()}`);
     }
@@ -187,9 +186,8 @@ function SendMessageSection() {
         .rpc();
 
       setStatus("Message sent");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      setStatus(`Error: ${e.message ?? e.toString()}`);
     }
   };
 
@@ -282,7 +280,7 @@ function InboxSection() {
 
       setMessages(items);
       setStatus(`Loaded ${items.length} messages`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       setStatus(`Error: ${e.message ?? e.toString()}`);
     }
@@ -312,7 +310,7 @@ function InboxSection() {
       setStatus("Message claimed");
       // reload inbox
       await loadInbox();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       setStatus(`Error: ${e.message ?? e.toString()}`);
     }
